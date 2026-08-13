@@ -1,6 +1,6 @@
 /* =========================================================
    style.css — Vansh Garg Portfolio
-   Theme: Dark Futuristic · Glassmorphism · Neon Glow
+   Theme: Dark Futuristic · Glassmorphism · Neon Glow · 3D Orbit
    ========================================================= */
 
 /* ── Custom Properties ──────────────────────────────────── */
@@ -227,7 +227,6 @@ img { max-width: 100%; }
 }
 @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
-
 /* =========================================================
    HERO
    ========================================================= */
@@ -323,6 +322,35 @@ img { max-width: 100%; }
   margin-bottom: 1.5rem;
 }
 
+/* ===== PROFILE IMAGE ===== */
+.profile-image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.profile-image {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(80, 190, 255, 0.8);
+    box-shadow:
+        0 0 20px rgba(50, 180, 255, 0.35),
+        0 0 45px rgba(130, 100, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    box-shadow:
+        0 0 25px rgba(50, 180, 255, 0.5),
+        0 0 55px rgba(130, 100, 255, 0.3);
+}
+
 /* =========================================================
    SECTIONS — shared
    ========================================================= */
@@ -351,20 +379,6 @@ img { max-width: 100%; }
 }
 .section-sub { color: var(--text-secondary); font-size: .9rem; }
 
-.section-actions {
-  display: flex; justify-content: center;
-  flex-wrap: wrap; gap: 1rem;
-  margin-top: 2rem;
-}
-
-/* Glassmorphism base card */
-.glass-card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-card);
-}
-
 /* =========================================================
    SCROLL REVEAL
    ========================================================= */
@@ -387,82 +401,279 @@ img { max-width: 100%; }
 }
 
 /* =========================================================
-   SKILLS — ORBITAL SYSTEM
+   3D INTERACTIVE SKILLS ORBIT SYSTEM
    ========================================================= */
 .orbit-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
+  padding: 2.5rem 1rem;
   user-select: none;
+  perspective: 1200px;
 }
 
-.orbit-system {
+.orbit-container-3d {
   position: relative;
-  /* Size set by JS but base here */
-  width: min(560px, 90vw);
-  height: min(560px, 90vw);
+  width: min(760px, 92vw);
+  height: min(540px, 78vw);
   cursor: grab;
+  transform-style: preserve-3d;
+  touch-action: none;
 }
-.orbit-system:active { cursor: grabbing; }
+.orbit-container-3d:active { cursor: grabbing; }
 
-/* Center core */
-.orbit-core {
+/* SVG Canvas for 3D continuous glowing orbital path */
+.orbit-svg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Central 3D Profile Element */
+.orbit-profile-core {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 80px; height: 80px;
-  background: var(--grad-main);
+  width: 145px; height: 145px;
   border-radius: 50%;
+  z-index: 50; /* Middle depth reference point */
+  pointer-events: auto;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.profile-frame-glass {
+  position: relative;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  padding: 5px;
+  background: linear-gradient(135deg, rgba(56,189,248,0.9), rgba(167,139,250,0.5), rgba(99,102,241,0.9));
+  box-shadow:
+    0 0 35px rgba(56, 189, 248, 0.5),
+    0 0 75px rgba(167, 139, 250, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: profilePulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes profilePulse {
+  0% {
+    box-shadow:
+      0 0 30px rgba(56, 189, 248, 0.45),
+      0 0 65px rgba(167, 139, 250, 0.25),
+      inset 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow:
+      0 0 45px rgba(56, 189, 248, 0.75),
+      0 0 90px rgba(167, 139, 250, 0.45),
+      inset 0 0 25px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.profile-glow-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(56, 189, 248, 0.6);
+  animation: ringRotate 20s linear infinite;
+  pointer-events: none;
+}
+@keyframes ringRotate { to { transform: rotate(360deg); } }
+
+.profile-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Fallback avatar avatar core text */
+.profile-fallback-text {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--grad-main);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
-  font-size: .7rem;
-  font-weight: 700;
+  font-size: 1.8rem; font-weight: 900;
   color: #fff;
-  box-shadow: 0 0 30px rgba(56,189,248,0.7), 0 0 60px rgba(56,189,248,0.3);
-  z-index: 5;
 }
 
-/* Orbital rings (generated by JS) */
-.orbit-ring {
+/* 3D Skill Globe wrapper element */
+.skill-globe-3d {
   position: absolute;
-  top: 50%; left: 50%;
-  border-radius: 50%;
-  border: 1px dashed rgba(99,102,241,0.35);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-/* Skill globe */
-.skill-globe {
-  position: absolute;
-  width: 64px; height: 64px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: var(--bg-glass);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(99,102,241,0.4);
-  display: flex; align-items: center; justify-content: center;
+  top: 0; left: 0;
+  display: flex;
   flex-direction: column;
-  font-size: .6rem;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text-primary);
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  z-index: 10;
-  box-shadow: 0 0 10px rgba(56,189,248,0.2);
+  will-change: transform, opacity;
+  transform-origin: center center;
 }
-.skill-globe:hover {
-  transform: translate(-50%, -50%) scale(1.25) !important;
-  box-shadow: 0 0 20px rgba(56,189,248,0.7), 0 0 40px rgba(167,139,250,0.4);
-  z-index: 20;
-  border-color: var(--neon-blue);
-}
-.skill-globe .skill-emoji {
-  font-size: 1.1rem;
-  margin-bottom: 2px;
+
+/* Skill Showcase Floating Label Above Globe */
+.skill-label-floating {
+  margin-bottom: 7px;
+  padding: 3px 10px;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3), inset 0 0 8px rgba(255, 255, 255, 0.1);
   pointer-events: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+}
+
+.skill-label-floating .skill-name {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+  display: block;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Spherical Globe Body */
+.sphere-body {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, filter 0.3s ease;
+  overflow: hidden;
+}
+
+/* Globe Shine Specular Reflection */
+.sphere-shine {
+  position: absolute;
+  top: 8%; left: 12%;
+  width: 45%; height: 35%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 80%);
+  pointer-events: none;
+}
+
+/* Globe Icon Inside */
+.sphere-icon {
+  font-size: 1.55rem;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+  transition: transform 0.3s ease;
+}
+
+/* Globe Bottom Depth Shadow */
+.sphere-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+}
+
+/* Globe Hover State */
+.skill-globe-3d:hover .sphere-body {
+  transform: scale(1.22);
+  filter: brightness(1.2);
+}
+.skill-globe-3d:hover .skill-label-floating {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.8), 0 0 35px rgba(167, 139, 250, 0.5);
+  transform: translateY(-3px) scale(1.08);
+}
+.skill-globe-3d:hover .skill-name {
+  color: #ffffff;
+  text-shadow: 0 0 12px var(--neon-blue), 0 0 24px var(--neon-purple);
+}
+
+/* ── Customized 3D Spherical Themes per Skill ────────────────────────────── */
+
+/* C++: Indigo Cyan Deep Planet */
+.sphere-cpp {
+  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0284c7 45%, #0f172a 90%);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+}
+
+/* Prompt Eng: AI Pink Violet Cyber Planet */
+.sphere-prompt {
+  background: radial-gradient(circle at 35% 35%, #f472b6 0%, #a855f7 50%, #31103f 90%);
+  box-shadow: 0 0 22px rgba(244, 114, 182, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(244, 114, 182, 0.5);
+}
+
+/* Java: Amber Crimson Solar Planet */
+.sphere-java {
+  background: radial-gradient(circle at 35% 35%, #fb923c 0%, #ea580c 45%, #451a03 90%);
+  box-shadow: 0 0 20px rgba(251, 146, 60, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(251, 146, 60, 0.5);
+}
+
+/* JavaScript: Golden Sun Planet */
+.sphere-js {
+  background: radial-gradient(circle at 35% 35%, #facc15 0%, #eab308 50%, #422006 90%);
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(250, 204, 21, 0.6);
+}
+
+/* HTML: Flame Orange Coral Planet */
+.sphere-html {
+  background: radial-gradient(circle at 35% 35%, #ff7849 0%, #ff5722 50%, #4a0e00 90%);
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 87, 34, 0.5);
+}
+
+/* CSS: Sapphire Blue Planet */
+.sphere-css {
+  background: radial-gradient(circle at 35% 35%, #60a5fa 0%, #2563eb 50%, #1e1b4b 90%);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(96, 165, 250, 0.5);
+}
+
+/* Tailwind: Electric Teal Planet */
+.sphere-tailwind {
+  background: radial-gradient(circle at 35% 35%, #2dd4bf 0%, #0d9488 50%, #042f2e 90%);
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(45, 212, 191, 0.5);
+}
+
+/* Bootstrap: Amethyst Purple Planet */
+.sphere-bootstrap {
+  background: radial-gradient(circle at 35% 35%, #c084fc 0%, #9333ea 50%, #3b0764 90%);
+  box-shadow: 0 0 20px rgba(192, 132, 252, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(192, 132, 252, 0.5);
+}
+
+/* Angular: Crimson Ruby Planet */
+.sphere-angular {
+  background: radial-gradient(circle at 35% 35%, #f87171 0%, #dc2626 50%, #450a0a 90%);
+  box-shadow: 0 0 20px rgba(248, 113, 113, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+/* React: Cyber Sky Cyan Planet */
+.sphere-react {
+  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0284c7 45%, #082f49 90%);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.55), inset 0 0 15px rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.6);
+}
+
+/* Node.js: Emerald Green Planet */
+.sphere-node {
+  background: radial-gradient(circle at 35% 35%, #34d399 0%, #059669 50%, #022c22 90%);
+  box-shadow: 0 0 22px rgba(52, 211, 153, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(52, 211, 153, 0.5);
 }
 
 /* =========================================================
@@ -671,7 +882,7 @@ img { max-width: 100%; }
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE DESIGN
    ========================================================= */
 @media (max-width: 768px) {
   .nav-links { display: none; }
@@ -683,15 +894,44 @@ img { max-width: 100%; }
   .small-grid  { grid-template-columns: 1fr; }
   .achievements-grid { grid-template-columns: 1fr; }
 
-  .orbit-system {
-    width: min(340px, 90vw) !important;
-    height: min(340px, 90vw) !important;
+  .orbit-container-3d {
+    width: min(380px, 94vw);
+    height: min(380px, 94vw);
+  }
+  .orbit-profile-core {
+    width: 110px; height: 110px;
+  }
+  .sphere-body {
+    width: 54px; height: 54px;
+  }
+  .sphere-icon {
+    font-size: 1.25rem;
+  }
+  .skill-label-floating {
+    padding: 2px 7px;
+    margin-bottom: 4px;
+  }
+  .skill-label-floating .skill-name {
+    font-size: 0.62rem;
   }
 }
 
 @media (max-width: 480px) {
   .section { padding: 4rem 4%; }
   .hero-name { font-size: 2.4rem; }
+  .orbit-container-3d {
+    width: min(320px, 96vw);
+    height: min(320px, 96vw);
+  }
+  .orbit-profile-core {
+    width: 90px; height: 90px;
+  }
+  .sphere-body {
+    width: 46px; height: 46px;
+  }
+  .sphere-icon {
+    font-size: 1.05rem;
+  }
 }
 
 /* =========================================================
